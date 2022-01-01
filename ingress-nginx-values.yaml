@@ -1,0 +1,18 @@
+controller:
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prom
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200M
+    limits:
+      cpu: 900m
+      memory: 600M
