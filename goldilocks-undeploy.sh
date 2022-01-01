@@ -1,10 +1,10 @@
 #!/bin/bash
-# this uninstalls fluentbit
+# this uninstalls goldilocks
 set -e
 [ -z "${KUBECONFIG}" ] && echo "KUBECONFIG not defined. Exit." && exit 1
 
 #
-# Delete fluentbit installation and namespace if namespace is present
+# Delete goldilocks installation and namespace if namespace is present
 if [[ ! -z $(kubectl get namespace | grep "^goldilocks" ) ]]; then
 
   echo
