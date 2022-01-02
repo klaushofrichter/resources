@@ -1,14 +1,14 @@
 #!/bin/bash
-set -e
 # this generates two goldilocks recommendations, one for Guaranteed QoS and one for Burstable QoS
+set -e
 GQOS="goldilocks-gqos.csv"
 BQOS="goldilocks-bqos.csv"
+LOCATIONFILE="resources-location.json"
 
-source ./config.sh
 [ -z "${KUBECONFIG}" ] && echo "KUBECONFIG not defined. Exit." && exit 1
 
 echo
-echo "==== $0: retrieve Goldilocks Dashboard pod"
+echo "==== $0: Retrieve Goldilocks Dashboard pod"
 POD=$(kubectl get pod -n goldilocks | grep "^goldilocks-dashboard" | cut -d " " -f 1) || true
 [ -z ${POD} ] && echo "No Goldilocks pod. Is Goldilocks deployed?" && exit 1
 echo "Goldilocks Dashboard pod is ${POD}"
@@ -59,8 +59,9 @@ while [ ${n} -lt ${nons} ]; do
 
       #
       # retrieve location of the setting from the helper file 
-      location=$( cat resources-location.json | jq -r ".[] | select(.ns == \"${ns}\") | .resource[] | select(.name == \"${name}\") | .containers[] | select( .\"container-name\" == \"${container_name}\") | .location" )
-      echo "Processing ${ns}, ${kind}, ${name}, ${container_name}"
+      
+      location="none"
+      [ -f ${LOCATIONFILE} ] && location=$( cat ${LOCATIONFILE} | jq -r ".[] | select(.ns == \"${ns}\") | .resource[] | select(.name == \"${name}\") | .containers[] | select( .\"container-name\" == \"${container_name}\") | .location" )
 
       # 
       # get the number of replicas gtom the live cluster
@@ -72,6 +73,7 @@ while [ ${n} -lt ${nons} ]; do
 
       #
       # Write the recommendation
+      echo "Processing ${ns}, ${kind}, ${name}, ${container_name}"
       echo "${ns}, ${kind}, ${name}, ${container_name}, ${c}, ${replicas}, ${lowerBoundCPU}, ${lowerBoundMemory}, ${upperBoundCPU}, ${upperBoundMemory}, ${location}" >> ${BQOS}
       echo "${ns}, ${kind}, ${name}, ${container_name}, ${c}, ${replicas}, ${targetCPU}, ${targetMemory}, ${uncappedTargetCPU}, ${uncappedTargetMemory}, ${location}" >> ${GQOS}
 
