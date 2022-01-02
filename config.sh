@@ -132,7 +132,8 @@ export GRAFANACLOUDLOGS="grafanacloud-${GRAFANA_CLOUD_ORG}-logs"
 # CHECKS #
 ##########
 if [ "${SLACK_ENABLE}" == "yes" ]; then
-  [ -z ${SLACKWEBHOOK} ] && echo "$0: missing SLACKWEBHOOK definition" && exit 1
+  [ -z ${SLACKWEBHOOK} ] && echo "$0: missing SLACKWEBHOOK definition in $0" && exit 1
+  [ "${SLACKWEBHOOK}" == "YOUR-WEBHOOK-URL-HERE" ] && echo "$0: need to edit SLACKWEBHOOK definition in $0" && exit 1
 fi
 
 if [ "${GRAFANA_CLOUD_ENABLE}" == "yes" ]; then
